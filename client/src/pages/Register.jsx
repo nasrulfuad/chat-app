@@ -1,17 +1,26 @@
 import React, { useState } from "react";
 import { Row, Col, Form, Button } from "react-bootstrap";
+import { useMutation } from "@apollo/client";
+import { Link } from "react-router-dom";
+import { REGISTER_USER } from "../graphql/authentication";
 
-export const Register = () => {
+export const Register = (props) => {
   const [variables, setVariables] = useState({
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+  const [errors, setErrors] = useState({});
+
+  const [registerUser, { loading }] = useMutation(REGISTER_USER, {
+    update: () => props.history.push("/login"),
+    onError: (err) => setErrors(err.graphQLErrors[0].extensions.errors),
+  });
 
   const onRegister = (e) => {
     e.preventDefault();
-    console.log(variables);
+    registerUser({ variables });
   };
 
   const { username, email, password, confirmPassword } = variables;
@@ -22,10 +31,13 @@ export const Register = () => {
         <h1 className="text-center">Register</h1>
         <Form onSubmit={onRegister}>
           <Form.Group>
-            <Form.Label>Username</Form.Label>
+            <Form.Label className={errors.username && "text-danger"}>
+              {errors.username ?? "Username"}
+            </Form.Label>
             <Form.Control
               type="text"
               value={username}
+              className={errors.username && "is-invalid"}
               onChange={(e) =>
                 setVariables({ ...variables, username: e.target.value })
               }
@@ -33,10 +45,13 @@ export const Register = () => {
           </Form.Group>
 
           <Form.Group>
-            <Form.Label>Email</Form.Label>
+            <Form.Label className={errors.email && "text-danger"}>
+              {errors.email ?? "Email"}
+            </Form.Label>
             <Form.Control
               type="email"
               value={email}
+              className={errors.email && "is-invalid"}
               onChange={(e) =>
                 setVariables({ ...variables, email: e.target.value })
               }
@@ -44,10 +59,13 @@ export const Register = () => {
           </Form.Group>
 
           <Form.Group>
-            <Form.Label>Password</Form.Label>
+            <Form.Label className={errors.password && "text-danger"}>
+              {errors.password ?? "Password"}
+            </Form.Label>
             <Form.Control
               type="password"
               value={password}
+              className={errors.password && "is-invalid"}
               onChange={(e) =>
                 setVariables({ ...variables, password: e.target.value })
               }
@@ -55,10 +73,13 @@ export const Register = () => {
           </Form.Group>
 
           <Form.Group>
-            <Form.Label>Confirm Password</Form.Label>
+            <Form.Label className={errors.confirmPassword && "text-danger"}>
+              {errors.confirmPassword ?? "Confirm Password"}
+            </Form.Label>
             <Form.Control
               type="password"
               value={confirmPassword}
+              className={errors.confirmPassword && "is-invalid"}
               onChange={(e) =>
                 setVariables({
                   ...variables,
@@ -68,9 +89,12 @@ export const Register = () => {
             />
           </Form.Group>
 
-          <Button variant="primary" type="submit" block>
-            Submit
+          <Button variant="primary" type="submit" block disabled={loading}>
+            {loading ? "Loading..." : "REGISTER"}
           </Button>
+          <small>
+            Already have an account? <Link to="/login">Login here</Link>
+          </small>
         </Form>
       </Col>
     </Row>

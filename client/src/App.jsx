@@ -1,12 +1,22 @@
 import React from "react";
 import { Container } from "react-bootstrap";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { ApolloProvider } from "./ApolloProvider";
+import { pages } from "./constants/pages";
 import "./App.scss";
-import { Register } from "./pages/register";
 
 export const App = () => {
   return (
-    <Container className="pt-5">
-      <Register />
-    </Container>
+    <ApolloProvider>
+      <Router>
+        <Container className="pt-5">
+          <Switch>
+            {pages.map((page, index) => (
+              <Route {...page} key={index} />
+            ))}
+          </Switch>
+        </Container>
+      </Router>
+    </ApolloProvider>
   );
 };

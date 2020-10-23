@@ -6,11 +6,15 @@ $border-radius: 0;
 
 body {
   min-height: 100vh;
-  background-color: #d3d0d0;
-  opacity: 1;
-  background-image: radial-gradient(
-    #000000 1.6500000000000001px,
-    #d3d0d0 1.6500000000000001px
-  );
-  background-size: 33px 33px;
+  background: #06beb6; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #48b1bf,
+    #06beb6
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #48b1bf,
+    #06beb6
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
