@@ -1,15 +1,77 @@
 const argon2 = require("argon2");
-const { UserInputError } = require("apollo-server");
+const { UserInputError, AuthenticationError } = require("apollo-server");
+const jwt = require("jsonwebtoken");
+const { Op } = require("sequelize");
 const { User } = require("../models");
+const { JWT_SECRET } = require("../config/env.json");
 
 module.exports = {
   Query: {
-    getUsers: async () => {
+    getUsers: async (_, __, { req }) => {
+      let user;
+
       try {
-        const users = await User.findAll();
-        return users;
+        if (req.headers && req.headers.authorization) {
+          const token = req.headers.authorization.split("Bearer ")[1];
+          jwt.verify(token, JWT_SECRET, (err, decoded) => {
+            if (err) {
+              throw new AuthenticationError("Unauthenticated");
+            }
+            user = decoded;
+          });
+        }
+
+        return await User.findAll({
+          where: { Username: { [Op.ne]: user.username } },
+        });
       } catch (error) {
         console.log(error);
+        throw error;
+      }
+    },
+    login: async (_, { username, password }) => {
+      let errors = {};
+      try {
+        if (username.trim() === "")
+          errors.username = "Username must not be empty";
+        if (password === "") errors.password = "Password must not be empty";
+
+        if (Object.keys(errors).length > 0) {
+          throw new UserInputError("bad request", { errors });
+        }
+
+        const user = await User.findOne({
+          where: { username },
+        });
+
+        if (!user) {
+          errors.username = "User not found";
+          throw new UserInputError("user not found", { errors });
+        }
+
+        const isValidPassword = await argon2.verify(user.password, password);
+
+        if (!isValidPassword) {
+          errors.password = "Password is incorrect";
+          throw new AuthenticationError("password is incorrect", { errors });
+        }
+
+        const token = jwt.sign(
+          {
+            username,
+          },
+          JWT_SECRET,
+          { expiresIn: 60 * 60 }
+        );
+
+        return {
+          ...user.toJSON(),
+          token,
+          createdAt: user.createdAt.toISOString(),
+        };
+      } catch (error) {
+        console.log(error);
+        throw error;
       }
     },
   },
