@@ -5,6 +5,9 @@ module.exports = {
   Message: {
     createdAt: (parent) => parent.createdAt.toISOString(),
   },
+  User: {
+    createdAt: (parent) => parent.createdAt.toISOString(),
+  },
   Query: {
     ...user.Query,
     ...message.Query,

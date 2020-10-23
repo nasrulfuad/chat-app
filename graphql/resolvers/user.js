@@ -2,7 +2,7 @@ const argon2 = require("argon2");
 const { UserInputError, AuthenticationError } = require("apollo-server");
 const jwt = require("jsonwebtoken");
 const { Op } = require("sequelize");
-const { User } = require("../../models");
+const { User, Message } = require("../../models");
 const { JWT_SECRET } = require("../../config/env.json");
 
 module.exports = {
@@ -11,9 +11,28 @@ module.exports = {
       try {
         if (!user) throw new AuthenticationError("Unauthenticated");
 
-        return await User.findAll({
+        let users = await User.findAll({
+          attributes: ["username", "image_url", "createdAt"],
           where: { Username: { [Op.ne]: user.username } },
         });
+
+        const allUserMessages = await Message.findAll({
+          where: {
+            [Op.or]: [{ from: user.username }, { to: user.username }],
+          },
+          order: [["createdAt", "DESC"]],
+        });
+
+        users = users.map((otherUser) => {
+          otherUser.latestMessage = allUserMessages.find(
+            (message) =>
+              message.from === otherUser.username ||
+              message.to === otherUser.username
+          );
+          return otherUser;
+        });
+
+        return users;
       } catch (error) {
         console.log(error);
         throw error;
@@ -59,7 +78,6 @@ module.exports = {
         return {
           ...user.toJSON(),
           token,
-          createdAt: user.createdAt.toISOString(),
         };
       } catch (error) {
         console.log(error);

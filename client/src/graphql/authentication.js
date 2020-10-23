@@ -14,7 +14,6 @@ export const REGISTER_USER = gql`
       confirmPassword: $confirmPassword
     ) {
       username
-      email
       createdAt
     }
   }
@@ -24,7 +23,6 @@ export const LOGIN_USER = gql`
   query login($username: String!, $password: String!) {
     login(username: $username, password: $password) {
       username
-      email
       token
       createdAt
     }
