@@ -32,19 +32,16 @@ export const User = () => {
           return (
             <div
               key={user.username}
-              className={`d-flex p-3 user__button ${selected && "bg-white"}`}
+              className={`d-flex p-3 user__button justify-content-center justify-content-md-start ${
+                selected && "bg-white"
+              }`}
               role="button"
               onClick={() =>
                 dispatch({ type: "SET_SELECTED_USER", payload: user.username })
               }
             >
-              <Image
-                src={user.image_url}
-                roundedCircle
-                className="mr-2"
-                style={{ width: 50, height: 50, objectFit: "cover" }}
-              />
-              <div>
+              <Image src={user.image_url} className="user__avatar" />
+              <div className="d-none d-md-block ml-2">
                 <p className="text-success">{user.username}</p>
                 <div className="font-weight-light">
                   {user.latestMessage

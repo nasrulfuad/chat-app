@@ -1,14 +1,16 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Fragment } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { GET_MESSAGES } from "../graphql/message";
 import { useMessageDispatch, useMessageState } from "../context/message";
+import { Chat } from "./Chat";
 
 export const Message = () => {
   const { users } = useMessageState();
   const dispatch = useMessageDispatch();
+
   const selectedUser = users?.find((user) => user.selected === true);
   const messages = selectedUser?.messages;
-  console.log(messages);
+
   const [
     getMessages,
     { loading: messageLoading, data: messagesData },
@@ -38,8 +40,15 @@ export const Message = () => {
   } else if (messageLoading) {
     chatMarkup = <p>Loading...</p>;
   } else if (messages.length > 0) {
-    chatMarkup = messages.map((message) => (
-      <p key={message.uuid}>{message.content}</p>
+    chatMarkup = messages.map((message, index) => (
+      <Fragment key={message.uuid}>
+        <Chat message={message} />
+        {index === messages.length - 1 && (
+          <div className="invisible">
+            <hr className="m-0" />
+          </div>
+        )}
+      </Fragment>
     ));
   } else if (messages.lengt === 0) {
     chatMarkup = <p>You are now connected! send your first message</p>;
@@ -47,5 +56,5 @@ export const Message = () => {
     chatMarkup = <p>You are not connected</p>;
   }
 
-  return <React.Fragment>{messagesData && chatMarkup}</React.Fragment>;
+  return <Fragment>{messagesData && chatMarkup}</Fragment>;
 };

@@ -27,10 +27,14 @@ export const Home = (props) => {
         </Button>
       </Row>
       <Row className="bg-white">
-        <Col xs={4} className="p-0 bg-secondary">
+        <Col xs={2} md={4} className="p-0 bg-secondary">
           <User />
         </Col>
-        <Col xs={8}>
+        <Col
+          xs={10}
+          md={8}
+          className="messages__box d-flex flex-column-reverse"
+        >
           <Message />
         </Col>
       </Row>
