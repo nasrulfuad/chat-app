@@ -16,11 +16,11 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      messageId: {
+      message_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      userId: {
+      user_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },

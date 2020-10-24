@@ -87,8 +87,8 @@ module.exports = {
 
         let reaction = await Reaction.findOne({
           where: {
-            messageId: message.id,
-            userId: user.id,
+            message_id: message.id,
+            user_id: user.id,
           },
         });
 
@@ -98,12 +98,13 @@ module.exports = {
           await reaction.save();
         } else {
           reaction = await Reaction.create({
-            messageId: message.id,
-            userId: user.id,
+            message_id: message.id,
+            user_id: user.id,
             content,
           });
         }
         pubsub.publish("NEW_REACTION", { newReaction: reaction });
+
         return reaction;
       } catch (error) {
         console.log(error);

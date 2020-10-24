@@ -4,8 +4,8 @@ module.exports = (sequelize, DataTypes) => {
   class Reaction extends Model {
     static associate({ User, Message }) {
       /* Relations */
-      this.belongsTo(User);
-      this.belongsTo(Message);
+      this.belongsTo(User, { foreignKey: "user_id" });
+      this.belongsTo(Message, { foreignKey: "message_id" });
     }
   }
   Reaction.init(
@@ -18,11 +18,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      messageId: {
+      message_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      userId: {
+      user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
