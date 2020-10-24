@@ -69,7 +69,6 @@ module.exports = {
         const token = jwt.sign(
           {
             username: user.username,
-            email: user.email,
             createdAt: user.createdAt,
           },
           JWT_SECRET,
