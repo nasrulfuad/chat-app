@@ -40,7 +40,13 @@ export const User = () => {
                 dispatch({ type: "SET_SELECTED_USER", payload: user.username })
               }
             >
-              <Image src={user.image_url} className="user__avatar" />
+              <Image
+                src={
+                  user.image_url ||
+                  "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
+                }
+                className="user__avatar"
+              />
               <div className="d-none d-md-block ml-2">
                 <p className="text-success">{user.username}</p>
                 <div className="font-weight-light">

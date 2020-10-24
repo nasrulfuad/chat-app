@@ -5,6 +5,7 @@ import { useMessageDispatch, useMessageState } from "../context/message";
 import { Chat } from "./Chat";
 
 export const Message = () => {
+  let chatMarkup;
   const { users } = useMessageState();
   const dispatch = useMessageDispatch();
 
@@ -34,12 +35,11 @@ export const Message = () => {
     }
   }, [messagesData]);
 
-  let chatMarkup;
   if (!messages && !messageLoading) {
-    chatMarkup = <p>Select a friend</p>;
+    chatMarkup = <p className="info__text">Select a friend</p>;
   } else if (messageLoading) {
-    chatMarkup = <p>Loading...</p>;
-  } else if (messages.length > 0) {
+    chatMarkup = <p className="info__text">Loading...</p>;
+  } else if (messages?.length > 0) {
     chatMarkup = messages.map((message, index) => (
       <Fragment key={message.uuid}>
         <Chat message={message} />
@@ -50,11 +50,13 @@ export const Message = () => {
         )}
       </Fragment>
     ));
-  } else if (messages.lengt === 0) {
-    chatMarkup = <p>You are now connected! send your first message</p>;
   } else {
-    chatMarkup = <p>You are not connected</p>;
+    chatMarkup = (
+      <p className="info__text">
+        You are now connected! send your first message
+      </p>
+    );
   }
 
-  return <Fragment>{messagesData && chatMarkup}</Fragment>;
+  return <Fragment>{chatMarkup}</Fragment>;
 };

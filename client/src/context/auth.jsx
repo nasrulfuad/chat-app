@@ -27,6 +27,7 @@ const authReducer = (state, action) => {
       };
     case "LOGOUT":
       localStorage.removeItem("token");
+      window.location.href = "/login";
       return {
         ...state,
         user: null,

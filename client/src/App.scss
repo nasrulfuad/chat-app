@@ -41,3 +41,13 @@ body {
     display: none;
   }
 }
+
+.message__form__input::placeholder {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.info__text {
+  color: rgba(0, 0, 0, 0.5);
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
