@@ -4,12 +4,13 @@ const jwt = require("jsonwebtoken");
 const { Op } = require("sequelize");
 const { User, Message } = require("../../models");
 const { JWT_SECRET } = require("../../config/env.json");
+const isUserAuthenticated = require("../../utils/isUserAuthenticated");
 
 module.exports = {
   Query: {
     getUsers: async (_, __, { user }) => {
       try {
-        if (!user) throw new AuthenticationError("Unauthenticated");
+        isUserAuthenticated(user);
 
         let users = await User.findAll({
           attributes: ["username", "image_url", "createdAt"],

@@ -1,12 +1,13 @@
-const { UserInputError, AuthenticationError } = require("apollo-server");
+const { UserInputError, withFilter } = require("apollo-server");
 const { Op } = require("sequelize");
 const { User, Message } = require("../../models");
+const isUserAuthenticated = require("../../utils/isUserAuthenticated");
 
 module.exports = {
   Query: {
     getMessages: async (_, { from }, { user }) => {
       try {
-        if (!user) throw new AuthenticationError("Unauthenticated");
+        isUserAuthenticated(user);
 
         const otherUser = await User.findOne({
           where: { username: from },
@@ -27,13 +28,14 @@ module.exports = {
         });
       } catch (error) {
         console.log(error);
+        throw error;
       }
     },
   },
   Mutation: {
-    sendMessage: async (_, { to, content }, { user }) => {
+    sendMessage: async (_, { to, content }, { user, pubsub }) => {
       try {
-        if (!user) throw new AuthenticationError("Unauthenticated");
+        isUserAuthenticated(user);
 
         const recipient = await User.findOne({ where: { username: to } });
 
@@ -47,15 +49,39 @@ module.exports = {
           throw new UserInputError("Message cannot be empty");
         }
 
-        return await Message.create({
+        const message = await Message.create({
           from: user.username,
           to,
           content,
         });
+
+        pubsub.publish("NEW_MESSAGE", { newMessage: message });
+
+        return message;
       } catch (error) {
         console.log(error);
         throw error;
       }
+    },
+  },
+  Subscription: {
+    newMessage: {
+      subscribe: withFilter(
+        (_, __, { pubsub, user }) => {
+          isUserAuthenticated(user);
+          return pubsub.asyncIterator(["NEW_MESSAGE"]);
+        },
+        ({ newMessage }, _, { user }) => {
+          /* Check if the sender or receiver is the same with data authenticated */
+          if (
+            newMessage.from === user.username ||
+            newMessage.to === user.username
+          ) {
+            return true;
+          }
+          return false;
+        }
+      ),
     },
   },
 };
