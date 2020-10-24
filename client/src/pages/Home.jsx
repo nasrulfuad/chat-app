@@ -1,39 +1,39 @@
-import React, { useState } from "react";
-import { Button, Col, Form, Row } from "react-bootstrap";
-import { useMutation } from "@apollo/client";
+import React, { useEffect } from "react";
+import { useSubscription } from "@apollo/client";
+import { Button, Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { FormInputMessage } from "../components/FormInputMessage";
 import { Message } from "../components/Message";
 import { User } from "../components/User";
-import { useAuthDispatch } from "../context/auth";
-import { SEND_MESSAGE } from "../graphql/message";
-import { useMessageState, useMessageDispatch } from "../context/message";
+import { useAuthDispatch, useAuthState } from "../context/auth";
+import { useMessageDispatch, useMessageState } from "../context/message";
+import { NEW_MESSAGE } from "../graphql/message";
 
 export const Home = (props) => {
-  const [content, setContent] = useState("");
-  const { users } = useMessageState();
   const authDispatch = useAuthDispatch();
+  const { user } = useAuthState();
   const messagedispatch = useMessageDispatch();
-  const selectedUser = users?.find((user) => user.selected === true);
 
-  const [sendMessage] = useMutation(SEND_MESSAGE, {
-    onCompleted: (data) => {
+  const { data: messageData, error: messageError } = useSubscription(
+    NEW_MESSAGE
+  );
+
+  useEffect(() => {
+    if (messageError) console.log(messageError);
+    if (messageData) {
+      const message = messageData.newMessage;
+      const otherUser =
+        user.username === message.to ? message.from : message.to;
+
       messagedispatch({
         type: "ADD_MESSAGE",
         payload: {
-          username: selectedUser.username,
-          message: data.sendMessage,
+          username: otherUser,
+          message,
         },
       });
-    },
-    onError: (error) => console.log(error),
-  });
-
-  const onSubmitMessage = (e) => {
-    e.preventDefault();
-    if (content.trim() === "" || !selectedUser) return;
-    sendMessage({ variables: { to: selectedUser.username, content } });
-    setContent("");
-  };
+    }
+  }, [messageData, messageError]);
 
   const logout = () => {
     authDispatch({ type: "LOGOUT" });
@@ -60,22 +60,7 @@ export const Home = (props) => {
           <div className="messages__box d-flex flex-column-reverse">
             <Message />
           </div>
-          <Form onSubmit={onSubmitMessage}>
-            <Form.Group className="d-flex align-items-center">
-              <Form.Control
-                type="text"
-                className="rounded-pill bg-secondary border-0 p-4 message__form__input"
-                placeholder="Type message..."
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-              />
-              <i
-                className="fas fa-paper-plane fa-2x text-primary ml-3"
-                role="button"
-                onClick={onSubmitMessage}
-              ></i>
-            </Form.Group>
-          </Form>
+          <FormInputMessage />
         </Col>
       </Row>
     </React.Fragment>

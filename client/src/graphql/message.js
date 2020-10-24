@@ -22,3 +22,15 @@ export const SEND_MESSAGE = gql`
     }
   }
 `;
+
+export const NEW_MESSAGE = gql`
+  subscription newMessage {
+    newMessage {
+      uuid
+      from
+      to
+      content
+      createdAt
+    }
+  }
+`;

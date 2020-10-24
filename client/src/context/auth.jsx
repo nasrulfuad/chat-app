@@ -21,6 +21,7 @@ const authReducer = (state, action) => {
   switch (action.type) {
     case "LOGIN":
       localStorage.setItem("token", action.payload.token);
+      window.location.href = "/";
       return {
         ...state,
         user: action.payload,
