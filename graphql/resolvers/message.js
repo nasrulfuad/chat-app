@@ -25,6 +25,12 @@ module.exports = {
             to: { [Op.in]: usernames },
           },
           order: [["createdAt", "DESC"]],
+          include: [
+            {
+              model: Reaction,
+              as: "reactions",
+            },
+          ],
         });
       } catch (error) {
         console.log(error);
@@ -65,7 +71,7 @@ module.exports = {
     },
 
     reactToMessage: async (_, { uuid, content }, { user, pubsub }) => {
-      const reactions = ["❤️", "😂", "😯", "😢", "😠", "👍", "👎"];
+      const reactions = ["❤️", "😆", "😯", "😢", "😡", "👍", "👎"];
 
       try {
         isUserAuthenticated(user);

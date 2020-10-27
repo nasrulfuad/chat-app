@@ -21,8 +21,8 @@ export const FormInputMessage = () => {
   };
 
   return (
-    <Form onSubmit={onSubmitMessage}>
-      <Form.Group className="d-flex align-items-center">
+    <Form onSubmit={onSubmitMessage} className="px-3 py-2">
+      <Form.Group className="d-flex align-items-center m-0">
         <Form.Control
           type="text"
           className="rounded-pill bg-secondary border-0 p-4 message__form__input"

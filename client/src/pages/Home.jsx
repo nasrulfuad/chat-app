@@ -7,7 +7,7 @@ import { Message } from "../components/Message";
 import { User } from "../components/User";
 import { useAuthDispatch, useAuthState } from "../context/auth";
 import { useMessageDispatch, useMessageState } from "../context/message";
-import { NEW_MESSAGE } from "../graphql/message";
+import { NEW_MESSAGE, NEW_REACTION } from "../graphql/message";
 
 export const Home = (props) => {
   const authDispatch = useAuthDispatch();
@@ -16,6 +16,10 @@ export const Home = (props) => {
 
   const { data: messageData, error: messageError } = useSubscription(
     NEW_MESSAGE
+  );
+
+  const { data: reactionData, error: reactionError } = useSubscription(
+    NEW_REACTION
   );
 
   useEffect(() => {
@@ -34,6 +38,25 @@ export const Home = (props) => {
       });
     }
   }, [messageData, messageError]);
+
+  useEffect(() => {
+    if (reactionError) console.log(reactionError);
+    if (reactionData) {
+      const reaction = reactionData.newReaction;
+      const otherUser =
+        user.username === reaction.message.to
+          ? reaction.message.from
+          : reaction.message.to;
+
+      messagedispatch({
+        type: "ADD_REACTION",
+        payload: {
+          username: otherUser,
+          reaction,
+        },
+      });
+    }
+  }, [reactionData, reactionError]);
 
   const logout = () => {
     authDispatch({ type: "LOGOUT" });
@@ -56,8 +79,8 @@ export const Home = (props) => {
         <Col xs={2} md={4} className="p-0 bg-secondary">
           <User />
         </Col>
-        <Col xs={10} md={8}>
-          <div className="messages__box d-flex flex-column-reverse">
+        <Col xs={10} md={8} className="p-0">
+          <div className="messages__box d-flex flex-column-reverse p-3">
             <Message />
           </div>
           <FormInputMessage />

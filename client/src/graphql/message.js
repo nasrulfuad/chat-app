@@ -8,6 +8,10 @@ export const GET_MESSAGES = gql`
       to
       content
       createdAt
+      reactions {
+        uuid
+        content
+      }
     }
   }
 `;
@@ -31,6 +35,40 @@ export const NEW_MESSAGE = gql`
       to
       content
       createdAt
+    }
+  }
+`;
+
+export const REACT_TO_MESSAGE = gql`
+  mutation reactToMessage($uuid: String!, $content: String!) {
+    reactToMessage(uuid: $uuid, content: $content) {
+      uuid
+      content
+      user {
+        username
+        image_url
+        createdAt
+      }
+      message {
+        uuid
+        from
+        to
+        content
+      }
+    }
+  }
+`;
+
+export const NEW_REACTION = gql`
+  subscription newReaction {
+    newReaction {
+      uuid
+      content
+      message {
+        uuid
+        from
+        to
+      }
     }
   }
 `;
