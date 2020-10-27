@@ -3,8 +3,8 @@ const { UserInputError, AuthenticationError } = require("apollo-server");
 const jwt = require("jsonwebtoken");
 const { Op } = require("sequelize");
 const { User, Message } = require("../../models");
-const { JWT_SECRET } = require("../../config/env.json");
 const isUserAuthenticated = require("../../utils/isUserAuthenticated");
+require("dotenv").config();
 
 module.exports = {
   Query: {
@@ -71,7 +71,7 @@ module.exports = {
             username: user.username,
             createdAt: user.createdAt,
           },
-          JWT_SECRET,
+          process.env.JWT_SECRET,
           { expiresIn: 60 * 60 }
         );
 

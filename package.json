@@ -14,6 +14,7 @@
   "dependencies": {
     "apollo-server": "^2.18.2",
     "argon2": "^0.27.0",
+    "dotenv": "^8.2.0",
     "graphql": "^15.3.0",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",
