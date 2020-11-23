@@ -44,7 +44,7 @@ export const ReactButton = ({ message }) => {
         </Popover>
       }
     >
-      <Button variant="link" className="px-2" className="reactButton">
+      <Button variant="link" className="px-2 reactButton">
         <i className="far fa-smile"></i>
       </Button>
     </OverlayTrigger>

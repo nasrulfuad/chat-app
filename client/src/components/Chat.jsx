@@ -1,8 +1,8 @@
-import React from "react";
-import { OverlayTrigger, Tooltip, Button } from "react-bootstrap";
 import moment from "moment";
-import { ReactButton } from "./ReactButton";
+import React from "react";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useAuthState } from "../context/auth";
+import { ReactButton } from "./ReactButton";
 
 export const Chat = ({ message }) => {
   const { user } = useAuthState();

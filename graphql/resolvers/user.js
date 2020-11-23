@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const { Op } = require("sequelize");
 const { User, Message } = require("../../models");
 const isUserAuthenticated = require("../../utils/isUserAuthenticated");
-require("dotenv").config();
+const { JWT_SECRET } = require("../../config/env.json");
 
 module.exports = {
   Query: {
@@ -66,12 +66,14 @@ module.exports = {
           throw new UserInputError("password is incorrect", { errors });
         }
 
+        console.log(user.username);
+
         const token = jwt.sign(
           {
             username: user.username,
             createdAt: user.createdAt,
           },
-          process.env.JWT_SECRET,
+          JWT_SECRET,
           { expiresIn: 60 * 60 }
         );
 
